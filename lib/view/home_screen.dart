@@ -14,8 +14,6 @@ class MyHomePage extends StatefulWidget {
 }
 
 class _MyHomePageState extends State<MyHomePage> {
-  final textController = TextEditingController();
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -34,16 +32,10 @@ class _MyHomePageState extends State<MyHomePage> {
                 );
               },
             ),
-            TextField(
-              controller: textController,
-              decoration: InputDecoration(
-                hintText: "Enter your name",
-                suffixIcon: IconButton(
-                    onPressed: () => context
-                        .read<UserCubit>()
-                        .updateName(textController.text),
-                    icon: const Icon(Icons.update)),
-              ),
+            ElevatedButton(
+              onPressed: () => Navigator.push(context,
+                  MaterialPageRoute(builder: (context) => UserScreen())),
+              child: Text('2nd'),
             ),
             const Text(
               'You have pushed the button this many times:',
@@ -59,11 +51,13 @@ class _MyHomePageState extends State<MyHomePage> {
               mainAxisAlignment: MainAxisAlignment.spaceEvenly,
               children: [
                 FloatingActionButton(
+                  heroTag: 'increment_fab', // Unique tag for the decrement FAB
                   onPressed: () => context.read<CounterCubit>().increment(),
                   tooltip: 'Increment',
                   child: const Icon(Icons.add),
                 ),
                 FloatingActionButton(
+                  heroTag: 'decrement_fab',
                   onPressed: () => context.read<CounterCubit>().decrement(),
                   tooltip: 'Decrement',
                   child: const Icon(Icons.remove),
@@ -72,6 +66,39 @@ class _MyHomePageState extends State<MyHomePage> {
             )
           ],
         ),
+      ),
+    );
+  }
+}
+
+class UserScreen extends StatelessWidget {
+  UserScreen({super.key});
+  final textController = TextEditingController();
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(),
+      body: Column(
+        children: [
+          BlocBuilder<UserCubit, UserState>(
+            builder: (context, UserState state) {
+              return Text(
+                '${state.userModel.toJson()}',
+              );
+            },
+          ),
+          TextField(
+            controller: textController,
+            decoration: InputDecoration(
+              hintText: "Enter your name",
+              suffixIcon: IconButton(
+                  onPressed: () =>
+                      context.read<UserCubit>().updateName(textController.text),
+                  icon: const Icon(Icons.update)),
+            ),
+          ),
+        ],
       ),
     );
   }
